@@ -1,7 +1,7 @@
-import json
-import os
-import subprocess
-import platform
+import json # For handling JSON data
+import os # For checking file existence
+import subprocess # For opening files in the default application
+import platform # For determining the operating system
 
 def EditTeams():
     # Creating an input for each team and its contestants
