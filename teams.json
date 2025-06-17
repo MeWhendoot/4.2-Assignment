@@ -7,7 +7,7 @@
             "4",
             "5"
         ],
-        "points": 18
+        "points": 15
     },
     "team 2": {
         "contestants": [
@@ -17,7 +17,7 @@
             "4",
             "5"
         ],
-        "points": 22
+        "points": 20
     },
     "team 3": {
         "contestants": [
@@ -27,7 +27,7 @@
             "4",
             "5"
         ],
-        "points": 23
+        "points": 11
     },
     "team 4": {
         "contestants": [
@@ -37,6 +37,6 @@
             "4",
             "5"
         ],
-        "points": 17
+        "points": 14
     }
 }

@@ -3,14 +3,29 @@ import os # For checking file existence
 import subprocess # For opening files in the default application
 import platform # For determining the operating system
 
-def EditTeams():
+TEAMS_FILE = "teams.json"  # Constant for the teams file
+NUM_TEAMS = 4  # Number of teams
+NUM_CONTESTANTS = 5  # Number of contestants per team
+RANK_POINTS = [10, 5, 3, 2]  # Points for each rank
+
+def edit_teams():
+    """Prompt user to enter teams and contestants, then save to JSON."""
+    
     # Creating an input for each team and its contestants
     teams = {}
-    for i in range(1, 5): # Number of teams
-        team_name = input(f"Enter name for Team {i}: ") 
+    for i in range(1, NUM_TEAMS + 1):
+        while True:
+            team_name = input(f"Enter name for Team {i}: ").strip()
+            if team_name:
+                break
+            print("Team name cannot be empty.")
         contestants = [] # List to hold contestants for the team
-        for j in range(1, 6):
-            contestant = input(f"Enter name for {team_name}'s Contestant {j}: ")
+        for j in range(1, NUM_CONTESTANTS + 1):
+            while True:
+                contestant = input(f"Enter name for {team_name}'s Contestant {j}: ").strip()
+                if contestant:
+                    break
+                print("Contestant name cannot be empty.")
             contestants.append(contestant)
         teams[team_name] = {
             "contestants": contestants,
@@ -18,22 +33,20 @@ def EditTeams():
         }
 
     # Save the teams to a JSON file
-    with open("teams.json", "w") as f:
+    with open(TEAMS_FILE, "w") as f:
         json.dump(teams, f, indent=4)
 
-    Start()
 
-def RankTeams():
-    # Ranks equal to their points value, from 1 to 4
-    rank_points = [10, 5, 3, 2]
-
+def rank_teams():
+    """Assign ranks to teams and update their points."""
+    
     # Check if teams.json exists
-    if not os.path.exists("teams.json"):
+    if not os.path.exists(TEAMS_FILE):
         print("Please create your teams first!")
-        Start()
+        return
 
     # Load the teams from the JSON file
-    with open("teams.json", "r") as f:
+    with open(TEAMS_FILE, "r") as f:
         teams = json.load(f)
         
     # Creating a list to hold assigned ranks
@@ -41,33 +54,34 @@ def RankTeams():
     assigned_ranks = []
 
     # Prompt user for ranks
-    print("\nAssign ranks to each team (1-4):")
+    print(f"\nAssign ranks to each team (1-{NUM_TEAMS}):")
     for team in team_names:
         while True:
             try:
-                rank = int(input(f"What rank did {team} achieve? (1-4): "))
-                if rank < 1 or rank > 4 or rank in assigned_ranks: # Check if rank is valid and not already assigned
+                rank = int(input(f"What rank did {team} achieve? (1-{NUM_TEAMS}): "))
+                if rank < 1 or rank > NUM_TEAMS or rank in assigned_ranks: # Check if rank is valid and not already assigned
                     raise ValueError
                 assigned_ranks.append(rank)
-                teams[team]["points"] += rank_points[rank - 1] # Assign points based on rank
+                teams[team]["points"] += RANK_POINTS[rank - 1] # Assign points based on rank
                 break
             except ValueError:
-                print("Invalid or duplicate rank. Please enter a unique number from 1 to 4.")
+                print(f"Invalid or duplicate rank. Please enter a unique number from 1 to {NUM_TEAMS}.")
 
     # Save the updated teams with points to the JSON file
-    with open("teams.json", "w") as f:
+    with open(TEAMS_FILE, "w") as f:
         json.dump(teams, f, indent=4)
 
-    Start()
+
+def show_scores():
+    """Display the scores of all teams."""
     
-def ShowScores():
     # Check if teams.json exists
-    if not os.path.exists("teams.json"):
+    if not os.path.exists(TEAMS_FILE):
         print("No scores available. Please create your teams first!")
         return
 
     # Load the teams from the JSON file
-    with open("teams.json", "r") as f:
+    with open(TEAMS_FILE, "r") as f:
         teams = json.load(f)
 
     # Sort teams by points in descending order
@@ -78,8 +92,11 @@ def ShowScores():
     for team_name, data in sorted_teams:
         print(f"{team_name}: {data['points']} points")
 
-def OpenTeamsFile():
-    file_path = "teams.json"
+
+def open_teams_file():
+    """Open the teams.json file with the default application."""
+    
+    file_path = TEAMS_FILE
 
     # Check if teams.json exists
     if not os.path.exists(file_path):
@@ -101,25 +118,30 @@ def OpenTeamsFile():
     except Exception as e:
         print(f"Failed to open the file: {e}")
 
-def Start():
+
+def start():
+    """Main menu for the tournament program."""
+    
     while True:
         print("\nChoose an option:",
         "\n1. Edit Teams",
         "\n2. Assign Ranks",
         "\n3. Show Scores",
-        "\n4. Open Teams File",)
+        "\n4. Open Teams File",
+        "\nType 'exit' to quit.")
         option = input("> ")
         if option == "1":
-            EditTeams()
+            edit_teams()
         elif option == "2":
-            RankTeams()
+            rank_teams()
         elif option == "3":
-            ShowScores()
+            show_scores()
         elif option == "4":
-            OpenTeamsFile()
-        elif option == "exit":
-            exit(0)
+            open_teams_file()
+        elif option.lower() == "exit":
+            break
         else:
             print("This is not a valid option!")
 
-Start()
+if __name__ == "__main__":
+    start()
